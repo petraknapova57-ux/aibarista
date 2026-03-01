@@ -395,6 +395,68 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #fff
 .gate-footer a{color:var(--red);text-decoration:none;font-weight:700;}
 .gate-footer a:hover{text-decoration:underline;}
 
+/* ══ COOKIE BANNER ══ */
+#cookieBanner{
+  position:fixed;bottom:0;left:0;right:0;z-index:8000;
+  background:var(--espresso);color:#e8ddd4;
+  padding:1rem 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;flex-wrap:wrap;
+  box-shadow:0 -4px 24px rgba(44,26,14,.18);
+  transform:translateY(100%);transition:transform .35s ease;
+}
+#cookieBanner.show{transform:translateY(0)}
+.cookie-text{font-size:.83rem;line-height:1.55;flex:1;min-width:200px}
+.cookie-text a{color:var(--latte);text-decoration:underline;cursor:pointer}
+.cookie-btns{display:flex;gap:.6rem;flex-shrink:0}
+.cookie-btn{
+  padding:.5rem 1.1rem;border-radius:7px;border:none;
+  font-family:'Lato',sans-serif;font-size:.83rem;font-weight:700;cursor:pointer;
+  transition:background .2s;
+}
+.cookie-btn-accept{background:var(--red);color:#fff}
+.cookie-btn-accept:hover{background:var(--red-soft)}
+.cookie-btn-info{background:transparent;color:var(--latte);border:1.5px solid rgba(196,168,130,.4)}
+.cookie-btn-info:hover{background:rgba(196,168,130,.1)}
+
+/* ══ PRIVACY MODAL ══ */
+#privacyModal{
+  position:fixed;inset:0;z-index:9500;
+  background:rgba(44,26,14,.6);backdrop-filter:blur(3px);
+  display:none;align-items:center;justify-content:center;padding:1.5rem;
+}
+#privacyModal.open{display:flex}
+.privacy-box{
+  background:var(--surface);border-radius:16px;
+  box-shadow:0 12px 48px rgba(44,26,14,.22);
+  width:100%;max-width:640px;max-height:85vh;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.privacy-header{
+  padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.privacy-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--espresso)}
+.privacy-close{
+  background:none;border:none;font-size:1.4rem;cursor:pointer;
+  color:var(--muted);line-height:1;padding:.2rem .4rem;border-radius:4px;
+}
+.privacy-close:hover{color:var(--text);background:var(--bg)}
+.privacy-body{padding:1.5rem;overflow-y:auto;font-size:.88rem;line-height:1.7;color:var(--text)}
+.privacy-body h3{
+  font-family:'Playfair Display',serif;font-size:.95rem;
+  color:var(--espresso);margin:1.2rem 0 .4rem;
+}
+.privacy-body h3:first-child{margin-top:0}
+.privacy-body p{margin-bottom:.6rem}
+.privacy-body a{color:var(--red)}
+.privacy-body ul{padding-left:1.2rem;margin-bottom:.6rem}
+.privacy-body li{margin-bottom:.25rem}
+.privacy-footer{
+  padding:1rem 1.5rem;border-top:1px solid var(--border);
+  display:flex;justify-content:flex-end;
+}
+
 </style>
   <!-- App Icon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='bg' cx='50%25' cy='35%25'%3E%3Cstop offset='0%25' stop-color='%23faf6f0'/%3E%3Cstop offset='100%25' stop-color='%23f7f2eb'/%3E%3C/radialGradient%3E%3CradialGradient id='bean' cx='40%25' cy='35%25'%3E%3Cstop offset='0%25' stop-color='%237a4828'/%3E%3Cstop offset='100%25' stop-color='%233b1a08'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23bg)' rx='18'/%3E%3Cellipse cx='50' cy='55' rx='21' ry='29' fill='url(%23bean)'/%3E%3Cpath d='M50 30 Q45 43 45 55 Q45 67 50 80' stroke='%232c1a0e' stroke-width='2.5' fill='none' stroke-linecap='round' opacity='.6'/%3E%3Ctext x='50' y='22' font-family='serif' font-size='14' font-weight='700' fill='%23c0392b' text-anchor='middle' font-style='italic'%3EAI%3C/text%3E%3C/svg%3E">
@@ -661,6 +723,97 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #fff
     <button class="reset-btn" onclick="resetForm()">↩ Vytvořit nový recept</button>
   </div>
 </main>
+
+<!-- ══ COOKIE BANNER ══ -->
+<div id="cookieBanner" role="region" aria-label="Informace o cookies">
+  <div class="cookie-text">
+    Tato aplikace ukládá funkční data do localStorage (správa přístupu a relace).
+    Vaše zadání jsou zpracována AI modelem <strong>Anthropic Claude</strong>&nbsp;—&nbsp;odesíláme je na servery Anthropic, Inc. (USA).
+    <a onclick="openPrivacy()">Zásady ochrany osobních údajů</a>
+  </div>
+  <div class="cookie-btns">
+    <button class="cookie-btn cookie-btn-info" onclick="openPrivacy()">Více informací</button>
+    <button class="cookie-btn cookie-btn-accept" onclick="acceptCookies()">Rozumím</button>
+  </div>
+</div>
+
+<!-- ══ PRIVACY MODAL ══ -->
+<div id="privacyModal" role="dialog" aria-modal="true" aria-labelledby="privacyTitle"
+     onclick="if(event.target===this)closePrivacy()">
+  <div class="privacy-box">
+    <div class="privacy-header">
+      <div class="privacy-title" id="privacyTitle">Zásady ochrany osobních údajů</div>
+      <button class="privacy-close" onclick="closePrivacy()" aria-label="Zavřít">×</button>
+    </div>
+    <div class="privacy-body">
+
+      <h3>Správce osobních údajů</h3>
+      <p>
+        <!-- ↓ VYPLŇTE: název firmy, adresa, IČO, kontaktní e-mail -->
+        <strong>[Název vaší firmy / živnosti]</strong><br>
+        [Adresa]<br>
+        IČO: [XXXXXXXX]<br>
+        E-mail: <a href="mailto:[vas@email.cz]">[vas@email.cz]</a>
+      </p>
+
+      <h3>Jaká data zpracováváme</h3>
+      <ul>
+        <li><strong>Přístupové kódy</strong> — uloženy lokálně v prohlížeči (localStorage). Nesynchronizujeme je na žádný server.</li>
+        <li><strong>Zadání receptů</strong> — typ nápoje, chuťové preference, omezení (např. „bez laktózy"). Tato data jsou odeslána na servery Anthropic, Inc. za účelem generování receptu.</li>
+        <li><strong>Relační token</strong> — krátkodobý záznam o přihlášení uložený v localStorage (platnost 30 dní).</li>
+      </ul>
+      <p>Nezpracováváme jméno, e-mail, adresu ani žádné jiné identifikátory uživatele.</p>
+
+      <h3>Účel a právní základ zpracování</h3>
+      <p>
+        Data jsou zpracovávána výhradně za účelem poskytnutí funkce generování kávových receptů
+        a kalkulace cen (<strong>oprávněný zájem</strong> dle čl. 6 odst. 1 písm. f) GDPR).
+        LocalStorage je využíváno jako <strong>technicky nezbytné</strong> úložiště pro fungování přístupové brány.
+      </p>
+
+      <h3>Předávání dat třetím stranám</h3>
+      <p>
+        Vaše zadání jsou předávána společnosti <strong>Anthropic, Inc.</strong> (USA) jako zpracovateli dat.
+        Anthropic zpracovává data v souladu s vlastními zásadami ochrany soukromí a standardními smluvními doložkami EU.
+        Více informací: <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener">anthropic.com/privacy</a>.
+      </p>
+      <p>Jiným třetím stranám data nepředáváme.</p>
+
+      <h3>Ukládání dat (cookies a localStorage)</h3>
+      <p>
+        Aplikace nepoužívá cookies. Využívá <strong>localStorage</strong> prohlížeče pro:
+      </p>
+      <ul>
+        <li>Ověření přístupového kódu a uložení relace (30 dní)</li>
+        <li>Konfiguraci vstupní brány (pouze pro správce)</li>
+      </ul>
+      <p>Tato data můžete kdykoli smazat v nastavení prohlížeče (Nástroje pro vývojáře → Application → Local Storage).</p>
+
+      <h3>Doba uchovávání</h3>
+      <p>Relační token je platný 30 dní, poté je automaticky zneplatněn. Lokální data jsou uložena pouze v prohlížeči uživatele.</p>
+
+      <h3>Vaše práva</h3>
+      <ul>
+        <li>Právo na přístup k osobním údajům</li>
+        <li>Právo na opravu nebo výmaz</li>
+        <li>Právo vznést námitku proti zpracování</li>
+        <li>Právo podat stížnost u Úřadu pro ochranu osobních údajů (<a href="https://www.uoou.cz" target="_blank" rel="noopener">uoou.cz</a>)</li>
+      </ul>
+      <p>
+        Pro uplatnění práv nás kontaktujte na:
+        <!-- ↓ VYPLŇTE: kontaktní e-mail -->
+        <a href="mailto:[vas@email.cz]">[vas@email.cz]</a>
+      </p>
+
+      <h3>Aktualizace těchto zásad</h3>
+      <p>Tyto zásady mohou být aktualizovány. Datum poslední změny: <strong><!-- ↓ VYPLŇTE datum -->1. 3. 2026</strong>.</p>
+
+    </div>
+    <div class="privacy-footer">
+      <button class="cookie-btn cookie-btn-accept" onclick="acceptCookies();closePrivacy()">Rozumím a zavřít</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ── Beans ──
@@ -1098,6 +1251,37 @@ function checkExistingSession(){
 
 applyGateCfg();
 checkExistingSession();
+
+// ── GDPR Cookie Banner ──
+const CONSENT_KEY = 'bai_cookie_consent';
+
+function initCookieBanner(){
+  if(!localStorage.getItem(CONSENT_KEY)){
+    setTimeout(()=> document.getElementById('cookieBanner').classList.add('show'), 600);
+  }
+}
+
+function acceptCookies(){
+  localStorage.setItem(CONSENT_KEY, '1');
+  document.getElementById('cookieBanner').classList.remove('show');
+}
+
+function openPrivacy(){
+  document.getElementById('privacyModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePrivacy(){
+  document.getElementById('privacyModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close privacy modal on Escape key
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closePrivacy();
+});
+
+initCookieBanner();
 
 </script>
 </body>
