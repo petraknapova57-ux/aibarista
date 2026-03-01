@@ -727,9 +727,6 @@ function getTags(){return[...document.querySelectorAll('.tag-btn.active')].map(b
 // ── API Key ──
 const EMBEDDED_API_KEY = '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';
 
-// ── API Key ──
-const EMBEDDED_API_KEY = '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';
-
 // ── State ──
 let _labor=0, _marginPct=70, _ingredients=[];
 let _loadInt;
@@ -907,7 +904,7 @@ function renderRecipe(r){
   const sl=document.getElementById('stepList');sl.innerHTML='';
   (r.steps||[]).forEach((s,i)=>{
     const li=document.createElement('li');li.className='step-item';li.style.animationDelay=(i*.1)+'s';
-    li.innerHTML=`<div class="step-num c${i%6}">${i+1}</div><div class="step-text">${s}</div>`;
+    li.innerHTML=`<div class="step-num c${i%6}">${i+1}</div><div class="step-text">${esc(s)}</div>`;
     sl.appendChild(li);
   });
 
@@ -943,9 +940,9 @@ function renderMarket(m){
   }
   let h=m.results.map((r,i)=>`
     <div class="market-item" style="animation-delay:${i*.1}s">
-      <div class="market-name">${r.drinkName}</div>
-      <div class="market-meta"><span class="market-loc">📍 ${r.cafe} · ${r.location}</span><span class="market-price">${r.price}</span></div>
-      ${r.note?`<div class="market-note">${r.note}</div>`:''}
+      <div class="market-name">${esc(r.drinkName)}</div>
+      <div class="market-meta"><span class="market-loc">📍 ${esc(r.cafe)} · ${esc(r.location)}</span><span class="market-price">${esc(r.price)}</span></div>
+      ${r.note?`<div class="market-note">${esc(r.note)}</div>`:''}
     </div>`).join('');
   if(m.marketInsight) h+=`<div class="market-insight"><div class="market-insight-lbl">💡 Tržní přehled</div><div class="market-insight-txt">${m.marketInsight}</div></div>`;
   el.innerHTML=h;
@@ -1009,8 +1006,8 @@ const ACCESS_CFG_KEY = 'bai_access_cfg';
 function getDefaultCodes(){
   return {
     "DEMO-2024": { uses: 999, used: 0, expires: null, label: "Demo kód" },
-    "CAFE-0001": { uses: 1, used: 0, expires: "2025-12-31", label: "Kavárna 1" },
-    "CAFE-0002": { uses: 1, used: 0, expires: "2025-12-31", label: "Kavárna 2" },
+    "CAFE-0001": { uses: 1, used: 0, expires: "2027-12-31", label: "Kavárna 1" },
+    "CAFE-0002": { uses: 1, used: 0, expires: "2027-12-31", label: "Kavárna 2" },
   };
 }
 
