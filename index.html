@@ -730,10 +730,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #fff
 function toggleTag(btn){btn.classList.toggle('active');}
 function getTags(){return[...document.querySelectorAll('.tag-btn.active')].map(b=>b.textContent.trim());}
 
-// ── Proxy URL (Cloudflare Worker) ──
-// Deploy worker.js to Cloudflare Workers and paste the Worker URL here.
-// The API key lives in the Worker environment — never in this file.
-const PROXY_URL = 'https://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev';
+// ── Proxy URL (Vercel serverless function) ──
+// The API key lives in Vercel environment variables — never in this file.
+const PROXY_URL = '/api/claude';
 
 // ── State ──
 let _labor=0, _marginPct=70, _ingredients=[];
