@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BaristaAI — Administrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:ital,wght@0,300;0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:     #c0392b;
+  --red-soft:#e8504a;
+  --red-pale:#fdf0ef;
+  --espresso:#2c1a0e;
+  --roast:   #5c3520;
+  --latte:   #c4a882;
+  --cream:   #faf6f0;
+  --sage:    #6a9e7a;
+  --bg:      #f7f2eb;
+  --surface: #fffcf8;
+  --text:    #2c1a0e;
+  --muted:   #8a7060;
+  --border:  rgba(196,168,130,.25);
+  --shadow:  0 2px 20px rgba(44,26,14,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ══ HEADER ══ */
+.admin-header{
+  background:var(--espresso);
+  padding:1rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.admin-logo{font-family:'Playfair Display',serif;font-size:1.4rem;color:#fff;letter-spacing:.02em}
+.admin-logo span{color:var(--latte)}
+.header-back{
+  color:var(--latte);font-size:.85rem;text-decoration:none;
+  opacity:.8;transition:opacity .2s;
+}
+.header-back:hover{opacity:1}
+.admin-badge{
+  background:var(--red);color:#fff;font-size:.7rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  padding:.25rem .6rem;border-radius:4px;margin-left:.75rem;
+}
+
+/* ══ LOGIN GATE ══ */
+#loginGate{
+  position:fixed;inset:0;z-index:9000;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  padding:1.5rem;
+}
+.login-box{
+  background:var(--surface);border-radius:16px;
+  box-shadow:0 8px 40px rgba(44,26,14,.14);
+  padding:2.5rem 2rem;width:100%;max-width:360px;text-align:center;
+}
+.login-logo{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--espresso);margin-bottom:.25rem}
+.login-logo span{color:var(--red)}
+.login-sub{font-size:.85rem;color:var(--muted);margin-bottom:2rem}
+.login-label{display:block;text-align:left;font-size:.8rem;font-weight:700;
+  color:var(--roast);letter-spacing:.05em;text-transform:uppercase;margin-bottom:.4rem}
+.login-input{
+  width:100%;padding:.7rem 1rem;font-family:'Lato',sans-serif;font-size:1rem;
+  border:1.5px solid var(--border);border-radius:8px;background:var(--cream);
+  color:var(--text);outline:none;transition:border-color .2s;margin-bottom:1rem;
+}
+.login-input:focus{border-color:var(--red)}
+.login-input.error{border-color:var(--red);animation:shake .3s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.login-btn{
+  width:100%;padding:.8rem;background:var(--red);color:#fff;
+  border:none;border-radius:8px;font-family:'Lato',sans-serif;
+  font-size:1rem;font-weight:700;cursor:pointer;transition:background .2s;
+}
+.login-btn:hover{background:var(--red-soft)}
+.login-err{color:var(--red);font-size:.85rem;margin-top:.75rem;min-height:1.2em}
+
+/* ══ MAIN LAYOUT ══ */
+main{max-width:960px;margin:0 auto;padding:2rem 1.5rem}
+
+/* ══ SECTION CARD ══ */
+.section-card{
+  background:var(--surface);border-radius:14px;
+  box-shadow:var(--shadow);border:1px solid var(--border);
+  margin-bottom:1.5rem;overflow:hidden;
+}
+.section-header{
+  padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;
+}
+.section-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--espresso)}
+.section-body{padding:1.5rem}
+
+/* ══ BUTTONS ══ */
+.btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.5rem 1rem;border-radius:8px;border:none;
+  font-family:'Lato',sans-serif;font-size:.85rem;font-weight:700;
+  cursor:pointer;transition:background .2s,transform .1s;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--red);color:#fff}
+.btn-primary:hover{background:var(--red-soft)}
+.btn-secondary{background:var(--cream);color:var(--roast);border:1.5px solid var(--border)}
+.btn-secondary:hover{background:var(--bg)}
+.btn-ghost{background:transparent;color:var(--muted);padding:.4rem .6rem;font-size:.8rem}
+.btn-ghost:hover{color:var(--red);background:var(--red-pale)}
+.btn-danger{background:#fff0f0;color:var(--red);border:1.5px solid #f5c6c4}
+.btn-danger:hover{background:#ffe0de}
+.btn-sm{padding:.35rem .7rem;font-size:.78rem}
+
+/* ══ CODE TABLE ══ */
+.code-table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+thead th{
+  text-align:left;padding:.6rem .75rem;
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);border-bottom:1.5px solid var(--border);
+}
+tbody tr{border-bottom:1px solid var(--border)}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg)}
+td{padding:.65rem .75rem;vertical-align:middle}
+td.mono{font-family:'DM Mono',monospace;font-size:.85rem;letter-spacing:.04em;font-weight:500}
+
+/* ══ STATUS BADGES ══ */
+.badge{
+  display:inline-block;padding:.2rem .55rem;border-radius:20px;
+  font-size:.72rem;font-weight:700;letter-spacing:.04em;
+}
+.badge-active{background:#e8f5ec;color:#2e7d52}
+.badge-expired{background:#fdf0ef;color:var(--red)}
+.badge-exhausted{background:#fff3e0;color:#b36a00}
+.badge-default{background:var(--cream);color:var(--muted);border:1px solid var(--border)}
+
+/* ══ ADD CODE FORM ══ */
+#addCodeForm{
+  display:none;
+  background:var(--bg);border-radius:10px;
+  border:1.5px solid var(--border);padding:1.25rem;margin-bottom:1.25rem;
+}
+#addCodeForm.open{display:block}
+.form-row{display:flex;gap:1rem;flex-wrap:wrap}
+.form-group{flex:1;min-width:160px}
+.form-group label{display:block;font-size:.75rem;font-weight:700;
+  color:var(--roast);letter-spacing:.05em;text-transform:uppercase;margin-bottom:.35rem}
+.form-group input{
+  width:100%;padding:.55rem .85rem;font-family:'Lato',sans-serif;font-size:.9rem;
+  border:1.5px solid var(--border);border-radius:7px;background:var(--surface);
+  color:var(--text);outline:none;transition:border-color .2s;
+}
+.form-group input:focus{border-color:var(--red)}
+.form-actions{margin-top:1rem;display:flex;gap:.5rem}
+
+/* ══ SETTINGS FORM ══ */
+.settings-group{margin-bottom:1.25rem}
+.settings-group label{display:block;font-size:.78rem;font-weight:700;
+  color:var(--roast);letter-spacing:.05em;text-transform:uppercase;margin-bottom:.4rem}
+.settings-group input,.settings-group textarea{
+  width:100%;padding:.6rem .9rem;font-family:'Lato',sans-serif;font-size:.9rem;
+  border:1.5px solid var(--border);border-radius:8px;background:var(--cream);
+  color:var(--text);outline:none;transition:border-color .2s;resize:vertical;
+}
+.settings-group input:focus,.settings-group textarea:focus{border-color:var(--red)}
+.settings-hint{font-size:.75rem;color:var(--muted);margin-top:.3rem}
+.save-ok{display:none;color:var(--sage);font-size:.85rem;font-weight:700;margin-left:.75rem}
+
+/* ══ PASSWORD CHANGE ══ */
+.pwd-row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end}
+.pwd-row .form-group{flex:1;min-width:140px}
+
+/* ══ EMPTY STATE ══ */
+.empty-state{text-align:center;padding:2rem;color:var(--muted);font-size:.9rem}
+
+/* ══ STATS ROW ══ */
+.stats-row{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.stat-box{
+  flex:1;min-width:110px;background:var(--surface);
+  border:1px solid var(--border);border-radius:10px;
+  padding:1rem;text-align:center;box-shadow:var(--shadow);
+}
+.stat-num{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--espresso);line-height:1}
+.stat-label{font-size:.73rem;color:var(--muted);margin-top:.3rem;letter-spacing:.04em;text-transform:uppercase}
+
+@media(max-width:600px){
+  main{padding:1rem}
+  .form-row{flex-direction:column}
+  .pwd-row{flex-direction:column}
+  .stats-row{gap:.6rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN GATE ══ -->
+<div id="loginGate">
+  <div class="login-box">
+    <div class="login-logo">Barista<span>AI</span></div>
+    <div class="login-sub">Administrační přístup</div>
+    <label class="login-label" for="loginPwd">Heslo</label>
+    <input class="login-input" id="loginPwd" type="password" placeholder="••••••••"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Přihlásit se →</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- ══ HEADER ══ -->
+<header class="admin-header">
+  <div style="display:flex;align-items:center;gap:.75rem">
+    <div class="admin-logo">Barista<span>AI</span></div>
+    <span class="admin-badge">Admin</span>
+  </div>
+  <a class="header-back" href="index.html">← Zpět do aplikace</a>
+</header>
+
+<!-- ══ MAIN ══ -->
+<main>
+
+  <!-- Stats -->
+  <div class="stats-row" id="statsRow"></div>
+
+  <!-- Code Management -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-title">Přístupové kódy</div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="btn btn-primary btn-sm" onclick="toggleAddForm()">+ Přidat kód</button>
+      </div>
+    </div>
+    <div class="section-body">
+      <!-- Add form -->
+      <div id="addCodeForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Kód (XXXX-XXXX)</label>
+            <input id="newCode" placeholder="CAFE-0003" maxlength="9"
+              oninput="fmtCode(this)" style="font-family:'DM Mono',monospace;letter-spacing:.06em">
+          </div>
+          <div class="form-group">
+            <label>Název</label>
+            <input id="newLabel" placeholder="Kavárna XY">
+          </div>
+          <div class="form-group">
+            <label>Max použití (0 = ∞)</label>
+            <input id="newUses" type="number" min="0" value="1">
+          </div>
+          <div class="form-group">
+            <label>Platnost do</label>
+            <input id="newExpires" type="date">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary btn-sm" onclick="saveNewCode()">Uložit kód</button>
+          <button class="btn btn-secondary btn-sm" onclick="toggleAddForm()">Zrušit</button>
+          <span id="addErr" style="color:var(--red);font-size:.82rem;align-self:center"></span>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="code-table-wrap">
+        <table id="codesTable">
+          <thead>
+            <tr>
+              <th>Kód</th>
+              <th>Název</th>
+              <th>Použití</th>
+              <th>Platnost</th>
+              <th>Stav</th>
+              <th>Akce</th>
+            </tr>
+          </thead>
+          <tbody id="codesBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gate Settings -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-title">Nastavení přihlašovací stránky</div>
+    </div>
+    <div class="section-body">
+      <div class="settings-group">
+        <label>Popis (zobrazí se na přihlašovací stránce)</label>
+        <textarea id="cfgDesc" rows="3" placeholder="Testovací demo verze BaristaAI.&#10;Zadejte přístupový kód pro pokračování."></textarea>
+        <div class="settings-hint">HTML je povoleno (např. &lt;br&gt;, &lt;b&gt;)</div>
+      </div>
+      <div class="settings-group">
+        <label>Kontaktní e-mail</label>
+        <input id="cfgEmail" type="email" placeholder="info@vase-kavarna.cz">
+      </div>
+      <div class="settings-group">
+        <label>Poznámka v patičce</label>
+        <input id="cfgFooter" placeholder="Demo verze — kód platí 30 dní.">
+      </div>
+      <div style="display:flex;align-items:center">
+        <button class="btn btn-primary" onclick="saveSettings()">Uložit nastavení</button>
+        <span class="save-ok" id="saveOk">✓ Uloženo</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-title">Změna hesla</div>
+    </div>
+    <div class="section-body">
+      <div class="pwd-row">
+        <div class="form-group">
+          <label>Nové heslo</label>
+          <input id="newPwd" type="password" placeholder="••••••••">
+        </div>
+        <div class="form-group">
+          <label>Potvrdit heslo</label>
+          <input id="newPwd2" type="password" placeholder="••••••••">
+        </div>
+        <div>
+          <button class="btn btn-primary" onclick="changePwd()" style="margin-bottom:.05rem">Změnit heslo</button>
+        </div>
+      </div>
+      <div id="pwdMsg" style="font-size:.83rem;margin-top:.6rem"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ══════════════════════════════════════
+// CONSTANTS
+// ══════════════════════════════════════
+const CODES_KEY   = 'bai_access_codes';
+const CFG_KEY     = 'bai_access_cfg';
+const ADMIN_KEY   = 'bai_admin_pwd';
+const SESSION_KEY = 'bai_admin_session';
+const DEFAULT_PWD = 'barista2024';
+
+// Mirrors getDefaultCodes() from index.html
+function getDefaultCodes(){
+  return {
+    "DEMO-2024": { uses: 999, used: 0, expires: null,         label: "Demo kód",  _default: true },
+    "CAFE-0001": { uses: 1,   used: 0, expires: "2027-12-31", label: "Kavárna 1", _default: true },
+    "CAFE-0002": { uses: 1,   used: 0, expires: "2027-12-31", label: "Kavárna 2", _default: true },
+  };
+}
+
+function getAllCodes(){
+  const stored = JSON.parse(localStorage.getItem(CODES_KEY) || '{}');
+  // Merge: defaults first, stored overrides (same logic as index.html)
+  const merged = Object.assign({}, getDefaultCodes(), stored);
+  // Mark custom codes
+  Object.keys(merged).forEach(k => {
+    if(!merged[k]._default) merged[k]._custom = true;
+  });
+  return merged;
+}
+
+function saveCustomCodes(codes){
+  // Only persist non-default codes + overridden default data
+  localStorage.setItem(CODES_KEY, JSON.stringify(codes));
+}
+
+// ══════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════
+function getAdminPwd(){
+  return localStorage.getItem(ADMIN_KEY) || DEFAULT_PWD;
+}
+
+function doLogin(){
+  const pwd = document.getElementById('loginPwd').value;
+  const errEl = document.getElementById('loginErr');
+  const inp = document.getElementById('loginPwd');
+  errEl.textContent = '';
+
+  if(pwd === getAdminPwd()){
+    sessionStorage.setItem(SESSION_KEY, '1');
+    document.getElementById('loginGate').style.display = 'none';
+    init();
+  } else {
+    errEl.textContent = 'Nesprávné heslo.';
+    inp.classList.add('error');
+    setTimeout(()=> inp.classList.remove('error'), 400);
+    inp.value = '';
+    inp.focus();
+  }
+}
+
+function checkSession(){
+  if(sessionStorage.getItem(SESSION_KEY) === '1'){
+    document.getElementById('loginGate').style.display = 'none';
+    init();
+  }
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+function init(){
+  renderStats();
+  renderTable();
+  loadSettings();
+}
+
+// ══════════════════════════════════════
+// STATS
+// ══════════════════════════════════════
+function renderStats(){
+  const codes = getAllCodes();
+  const list = Object.values(codes);
+  const total = list.length;
+  const active = list.filter(c => codeStatus(c) === 'active').length;
+  const totalUses = list.reduce((s, c) => s + (c.used || 0), 0);
+  const custom = list.filter(c => c._custom).length;
+
+  document.getElementById('statsRow').innerHTML =
+    stat(total,     'Celkem kódů') +
+    stat(active,    'Aktivních') +
+    stat(totalUses, 'Celkem použití') +
+    stat(custom,    'Vlastních kódů');
+}
+
+function stat(n, label){
+  return `<div class="stat-box"><div class="stat-num">${n}</div><div class="stat-label">${label}</div></div>`;
+}
+
+// ══════════════════════════════════════
+// CODE TABLE
+// ══════════════════════════════════════
+function codeStatus(c){
+  if(c.expires && new Date(c.expires) < new Date()) return 'expired';
+  if(c.uses > 0 && (c.used || 0) >= c.uses)         return 'exhausted';
+  return 'active';
+}
+
+function statusBadge(status){
+  const map = {
+    active:    ['badge-active',    'Aktivní'],
+    expired:   ['badge-expired',   'Vypršel'],
+    exhausted: ['badge-exhausted', 'Vyčerpán'],
+  };
+  const [cls, label] = map[status];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function renderTable(){
+  const codes = getAllCodes();
+  const body = document.getElementById('codesBody');
+  const keys = Object.keys(codes);
+
+  if(keys.length === 0){
+    body.innerHTML = `<tr><td colspan="6" class="empty-state">Žádné kódy.</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = keys.map(key => {
+    const c = codes[key];
+    const status = codeStatus(c);
+    const isDefault = !!c._default && !c._custom;
+    const usageLabel = c.uses === 0 || c.uses === 999 && isDefault
+      ? `${c.used || 0} / ∞`
+      : `${c.used || 0} / ${c.uses}`;
+    const expiresLabel = c.expires ? c.expires : '—';
+    const deleteBtn = isDefault
+      ? `<button class="btn btn-ghost btn-sm" title="Výchozí kód nelze smazat" disabled style="opacity:.35;cursor:default">🗑</button>`
+      : `<button class="btn btn-danger btn-sm" onclick="deleteCode('${esc(key)}')">🗑 Smazat</button>`;
+
+    return `<tr>
+      <td class="mono">${esc(key)} ${isDefault ? '<span class="badge badge-default" title="Výchozí kód">výchozí</span>' : ''}</td>
+      <td>${esc(c.label || '—')}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:.82rem">${usageLabel}</td>
+      <td>${expiresLabel}</td>
+      <td>${statusBadge(status)}</td>
+      <td style="display:flex;gap:.35rem;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="resetUsage('${esc(key)}')">↺ Reset</button>
+        ${deleteBtn}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// ADD CODE
+// ══════════════════════════════════════
+function toggleAddForm(){
+  const f = document.getElementById('addCodeForm');
+  f.classList.toggle('open');
+  if(f.classList.contains('open')){
+    document.getElementById('newCode').focus();
+    document.getElementById('addErr').textContent = '';
+  }
+}
+
+function fmtCode(inp){
+  let v = inp.value.replace(/[^A-Za-z0-9]/g,'').toUpperCase();
+  if(v.length > 4) v = v.slice(0,4)+'-'+v.slice(4,8);
+  inp.value = v;
+}
+
+function saveNewCode(){
+  const codeRaw = document.getElementById('newCode').value.trim().toUpperCase();
+  const label   = document.getElementById('newLabel').value.trim();
+  const uses    = parseInt(document.getElementById('newUses').value, 10) || 0;
+  const expires = document.getElementById('newExpires').value || null;
+  const errEl   = document.getElementById('addErr');
+
+  if(!/^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(codeRaw)){
+    errEl.textContent = 'Kód musí být ve formátu XXXX-XXXX.'; return;
+  }
+  const existing = getAllCodes();
+  if(existing[codeRaw]){
+    errEl.textContent = 'Kód již existuje.'; return;
+  }
+
+  const stored = JSON.parse(localStorage.getItem(CODES_KEY) || '{}');
+  stored[codeRaw] = { uses, used: 0, expires, label };
+  saveCustomCodes(stored);
+
+  // Reset form
+  document.getElementById('newCode').value    = '';
+  document.getElementById('newLabel').value   = '';
+  document.getElementById('newUses').value    = '1';
+  document.getElementById('newExpires').value = '';
+  errEl.textContent = '';
+  document.getElementById('addCodeForm').classList.remove('open');
+
+  renderStats();
+  renderTable();
+}
+
+// ══════════════════════════════════════
+// RESET / DELETE
+// ══════════════════════════════════════
+function resetUsage(key){
+  const stored = JSON.parse(localStorage.getItem(CODES_KEY) || '{}');
+  // If it's a default code, store an override with used:0
+  if(!stored[key]){
+    const defaults = getDefaultCodes();
+    if(defaults[key]){
+      stored[key] = Object.assign({}, defaults[key], { used: 0 });
+      delete stored[key]._default;
+    }
+  } else {
+    stored[key].used = 0;
+  }
+  saveCustomCodes(stored);
+  renderStats();
+  renderTable();
+}
+
+function deleteCode(key){
+  if(!confirm(`Opravdu smazat kód ${key}?`)) return;
+  const stored = JSON.parse(localStorage.getItem(CODES_KEY) || '{}');
+  delete stored[key];
+  saveCustomCodes(stored);
+  renderStats();
+  renderTable();
+}
+
+// ══════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════
+function loadSettings(){
+  const cfg = JSON.parse(localStorage.getItem(CFG_KEY) || '{}');
+  document.getElementById('cfgDesc').value   = cfg.gateDesc    || '';
+  document.getElementById('cfgEmail').value  = cfg.contact     || '';
+  document.getElementById('cfgFooter').value = cfg.gateFooterNote || '';
+}
+
+function saveSettings(){
+  const cfg = {
+    gateDesc:       document.getElementById('cfgDesc').value,
+    contact:        document.getElementById('cfgEmail').value.trim(),
+    gateFooterNote: document.getElementById('cfgFooter').value.trim(),
+  };
+  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+  const ok = document.getElementById('saveOk');
+  ok.style.display = 'inline';
+  setTimeout(()=> ok.style.display = 'none', 2500);
+}
+
+// ══════════════════════════════════════
+// CHANGE PASSWORD
+// ══════════════════════════════════════
+function changePwd(){
+  const p1 = document.getElementById('newPwd').value;
+  const p2 = document.getElementById('newPwd2').value;
+  const msg = document.getElementById('pwdMsg');
+  if(!p1){ msg.style.color = 'var(--red)'; msg.textContent = 'Zadejte nové heslo.'; return; }
+  if(p1 !== p2){ msg.style.color = 'var(--red)'; msg.textContent = 'Hesla se neshodují.'; return; }
+  localStorage.setItem(ADMIN_KEY, p1);
+  msg.style.color = 'var(--sage)';
+  msg.textContent = '✓ Heslo bylo změněno.';
+  document.getElementById('newPwd').value  = '';
+  document.getElementById('newPwd2').value = '';
+  setTimeout(()=> msg.textContent = '', 3000);
+}
+
+// ══════════════════════════════════════
+// CSV EXPORT
+// ══════════════════════════════════════
+function exportCSV(){
+  const codes = getAllCodes();
+  const rows = [['Kód','Název','Max použití','Použito','Platnost do','Stav']];
+  Object.entries(codes).forEach(([key, c]) => {
+    rows.push([
+      key,
+      c.label || '',
+      c.uses === 999 ? '∞' : c.uses,
+      c.used || 0,
+      c.expires || '',
+      codeStatus(c),
+    ]);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'baristaai-kody.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ══════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════
+function esc(s){
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ══════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════
+checkSession();
+</script>
+</body>
+</html>
