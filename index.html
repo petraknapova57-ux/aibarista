@@ -730,8 +730,10 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:2px solid #fff
 function toggleTag(btn){btn.classList.toggle('active');}
 function getTags(){return[...document.querySelectorAll('.tag-btn.active')].map(b=>b.textContent.trim());}
 
-// ── API Key ──
-const EMBEDDED_API_KEY = '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';
+// ── Proxy URL (Cloudflare Worker) ──
+// Deploy worker.js to Cloudflare Workers and paste the Worker URL here.
+// The API key lives in the Worker environment — never in this file.
+const PROXY_URL = 'https://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev';
 
 // ── State ──
 let _labor=0, _marginPct=70, _ingredients=[];
@@ -795,13 +797,10 @@ Vrať POUZE čistý JSON bez markdown:
 Povinně: ingredients používají klíč "costPerPortion". market.results = 3-5 reálných kaváren. Přepočet: 1EUR=25Kč, 1USD=23Kč.`;
 
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+    const res=await fetch(PROXY_URL,{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
-        'x-api-key': EMBEDDED_API_KEY,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
       },
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',
